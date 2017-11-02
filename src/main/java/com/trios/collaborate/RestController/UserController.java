@@ -1,5 +1,7 @@
 package com.trios.collaborate.RestController;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,4 +45,63 @@ public class UserController {
 			
 	}
 	
+	@RequestMapping(value="/login",method=RequestMethod.POST)
+	public ResponseEntity<?>login(@RequestBody User user,HttpSession session)
+	{
+		User validUser=userDAO.login(user);
+		if(validUser==null){
+			Error error=new Error(4,"INVALID LOGIN DATA");
+			return new  ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+		}
+		validUser.setIsOnline("Online");
+		userDAO.update(validUser);
+		session.setAttribute("userId",validUser.getUserId());
+		return new ResponseEntity<User>(validUser,HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value="/logout",method=RequestMethod.PUT)
+	public ResponseEntity<?>logout(HttpSession session){
+		String userId=(String)session.getAttribute("userId");
+		System.out.println("name of the user:"+userId);
+		if(userId==null){
+			Error error=new Error(5,"PLEASE LOGIN");
+			return new  ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+		}
+		User user=userDAO.getUser(userId);
+		user.setIsOnline("Offline");
+		userDAO.update(user);
+		session.removeAttribute("userId");
+		session.invalidate();
+		return new ResponseEntity<User>(user,HttpStatus.OK);
+	}
+	@RequestMapping(value="/getUser",method=RequestMethod.GET)
+	public ResponseEntity<?>getUser(HttpSession session){
+		String userId=(String)session.getAttribute("userId");
+		if(userId==null){
+			Error error=new Error(5,"PLEASE LOGIN");
+			return new  ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+		}
+		User user=userDAO.getUser(userId);
+		return new ResponseEntity<User>(user,HttpStatus.OK);
+	}
+	@RequestMapping(value="/updateUser",method=RequestMethod.PUT)
+	public ResponseEntity<?>updateUser(@RequestBody User user,HttpSession session){
+		String userId=(String)session.getAttribute("userId");
+		if(userId==null){
+			Error error=new Error(5,"PLEASE LOGIN");
+			return new  ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+		}
+		if(!userDAO.isupdateEmailValid(user.getEmail(),user.getUserId())){
+			Error error=new Error(3,"EMAIL ALREADY EXISTS");
+			return new ResponseEntity<Error>(error,HttpStatus.NOT_ACCEPTABLE);
+		}
+		try{
+			userDAO.update(user);
+			return new ResponseEntity<User>(user,HttpStatus.OK);
+		}catch(Exception e){
+			Error error=new Error(4,"UNABLE TO UPDATE ");
+			return new  ResponseEntity<Error>(error,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
