@@ -28,6 +28,21 @@
     <version>2.7.5</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-websocket</artifactId>
+    <version>4.0.0.RELEASE</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-messaging</artifactId>
+    <version>4.0.0.RELEASE</version>
+</dependency>
+
+
+
 <dependency>
 		  <groupId>commons-fileupload</groupId>
 		  <artifactId>commons-fileupload</artifactId>

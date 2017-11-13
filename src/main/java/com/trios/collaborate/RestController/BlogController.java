@@ -122,12 +122,13 @@ public class BlogController {
 	@RequestMapping(value="/getnotification",method=RequestMethod.GET)
 	   public ResponseEntity<?> getNotification(HttpSession session){
 		String userId=(String)session.getAttribute("userId");
-		System.out.println("name of the user:"+userId);
-		if(userId==null){
+		
+		/*if(userId==null){
 			Error error=new Error(5,"PLEASE LOGIN");
 			System.out.println("PLEASE LOGIN");
 			return new  ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
-		}
+		}*/
+		System.out.println("name of the user:"+userId);
 			List<Blog> blogNotification=blogDAO.getNotification(userId);
 			System.out.println(blogNotification);
 			return new ResponseEntity<List<Blog>>(blogNotification,HttpStatus.OK);
